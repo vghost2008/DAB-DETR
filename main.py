@@ -18,13 +18,15 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, DistributedSampler
 import torch.distributed as dist
-
+import os
 import datasets
 import util.misc as utils
 from datasets import build_dataset, get_coco_api_from_dataset
 from engine import evaluate, train_one_epoch
 from models import build_DABDETR, build_dab_deformable_detr
 from util.utils import clean_state_dict
+
+os.environ['CUDA_VISIBLE_DEVICES'] = "2"
 
 
 def get_args_parser():
@@ -45,7 +47,7 @@ def get_args_parser():
                         help='gradient clipping max norm')
 
     # Model parameters
-    parser.add_argument('--modelname', '-m', type=str, required=True, choices=['dab_detr', 'dab_deformable_detr'])
+    parser.add_argument('--modelname', '-m', type=str, default="dab_detr", choices=['dab_detr', 'dab_deformable_detr'])
     parser.add_argument('--frozen_weights', type=str, default=None,
                         help="Path to the pretrained model. If set, only the mask head will be trained")
 
@@ -136,7 +138,7 @@ def get_args_parser():
 
     # dataset parameters
     parser.add_argument('--dataset_file', default='coco')
-    parser.add_argument('--coco_path', type=str, required=True)
+    parser.add_argument('--coco_path', type=str, default="/home/wj/ai/mldata1/coco")
     parser.add_argument('--coco_panoptic_path', type=str)
     parser.add_argument('--remove_difficult', action='store_true')
     parser.add_argument('--fix_size', action='store_true', 
@@ -144,7 +146,7 @@ def get_args_parser():
 
 
     # Traing utils
-    parser.add_argument('--output_dir', default='', help='path where to save, empty for no saving')
+    parser.add_argument('--output_dir', default='logs/dab_detr/r50', help='path where to save, empty for no saving')
     parser.add_argument('--note', default='', help='add some notes to the experiment')
     parser.add_argument('--device', default='cuda', help='device to use for training / testing')
     parser.add_argument('--seed', default=42, type=int)
